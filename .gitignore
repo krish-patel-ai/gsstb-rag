@@ -1,0 +1,11 @@
+gsstb-rag/
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+data/pdfs/*
+!data/pdfs/.gitkeep
+data/chroma_db/*
+!data/chroma_db/.gitkeep
+.DS_Store

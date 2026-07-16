@@ -1,0 +1,9 @@
+gsstb-rag/
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+data/pdfs/*
+.git/
+.DS_Store
