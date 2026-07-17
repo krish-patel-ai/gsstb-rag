@@ -126,10 +126,6 @@ See the `screenshots/` folder for example interactions covering:
 
 ## Known limitations
 
-- Retrieval ranking can occasionally favor a passage that references a
-  topic in passing over one that explicitly defines it, leading to a
-  conservative refusal even when related content exists elsewhere. See
-  `ARCHITECTURE.md` for a concrete, tested example.
 - No authentication, session persistence, or systematic performance
   optimization-scoped out given time constraints in favor of
   retrieval-quality features.
