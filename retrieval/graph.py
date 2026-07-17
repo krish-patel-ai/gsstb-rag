@@ -10,10 +10,6 @@ from retrieval.hybrid_retriever import HybridRetriever, Retrieved
 load_dotenv()
 
 GROQ_MODEL = "openai/gpt-oss-120b"
-
-# CrossEncoder scores are relative, not probabilities. A threshold of -2.0
-# is too strict for follow-up questions and filters out otherwise relevant
-# chunks. Use a more permissive threshold.
 RELEVANCE_THRESHOLD = -4.0
 
 REFUSAL_TEXT = "The requested information is unavailable in the provided textbooks."
@@ -72,11 +68,6 @@ Respond with ONLY the rewritten text, nothing else — no quotes, no explanation
     print("REWRITTEN:", rewritten)
     print("=" * 60)
 
-    # Sanity-check the rewrite before trusting it: reject anything that looks
-    # like meta-commentary/explanation rather than an actual standalone
-    # question or instruction. Deliberately does NOT require a "?" ending,
-    # since valid rewrites of instructions (e.g. "explain in more detail")
-    # are not phrased as questions.
     if (
         rewritten
         and len(rewritten) < 300
