@@ -1,6 +1,3 @@
-cd ~/Desktop/gsstb-rag
-
-cat > README.md << 'EOF'
 # GSSTB Conversational RAG System
 
 A conversational AI assistant that answers questions strictly from Gujarat State
