@@ -12,30 +12,52 @@ genuinely cannot answer from what it was given -- checked in code so
 citations and the refusal message can never contradict each other.
 
 ## Pipeline
-User question
-|
-v
-+----------------+   Rewrites ambiguous follow-ups ("explain it in more
-| rewrite_query  |   detail") into standalone questions/instructions using
-+-------+--------+   recent chat history. Skipped on the first turn.
-|
-v
-+----------------+   Classifies the (rewritten) question against the real
-|  route_query   |   set of indexed (standard, subject) pairs. Falls back
-+-------+--------+   to unfiltered search on low confidence.
-|
-v
-+----------------+   Dense (ChromaDB, BAAI/bge-small-en-v1.5) + Sparse
-|    retrieve    |   (BM25) search, RRF fusion, then cross-encoder rerank.
-+-------+--------+   Retries unfiltered if the router's top score is weak,
-|             not just when it returns zero results.
-v
-+----------------+   Relevance-gated: refuses immediately (no LLM call) if
-|    generate    |   nothing clears the threshold. Otherwise generates from
-+-------+--------+   the excerpts; citations are cleared if the model still
-|             outputs the exact refusal string despite having chunks.
-v
-Answer + page-accurate citations (or a clean, honest refusal)
+
+```text
+User Question
+      │
+      ▼
++----------------------+
+|    rewrite_query     |
++----------------------+
+ Rewrites ambiguous follow-up questions or instructions
+ into standalone queries using recent chat history.
+ Skipped for the first user message.
+      │
+      ▼
++----------------------+
+|     route_query      |
++----------------------+
+ Predicts the most relevant textbook (standard + subject).
+ Falls back to searching all textbooks when confidence is low.
+      │
+      ▼
++----------------------+
+|      retrieve        |
++----------------------+
+ Performs hybrid retrieval:
+   • Dense Search (ChromaDB + BGE embeddings)
+   • Sparse Search (BM25)
+   • Reciprocal Rank Fusion (RRF)
+   • CrossEncoder reranking
+ Retries without routing filters if the best result is weak.
+      │
+      ▼
++----------------------+
+|      generate        |
++----------------------+
+ Filters low-scoring chunks.
+ Builds the LLM context.
+ Generates the answer strictly from retrieved excerpts.
+ Returns an honest refusal if evidence is insufficient.
+      │
+      ▼
++----------------------+
+| Answer + Citations   |
++----------------------+
+ Returns the final answer together with textbook name,
+ page number, and supporting snippet.
+```
 
 ## Key design decisions
 
