@@ -35,6 +35,7 @@ def _get_groq_client() -> Groq:
 
 
 def rewrite_query_node(state: ChatState) -> ChatState:
+    print("🔥 rewrite_query_node called")
     if not state["chat_history"]:
         state["question"] = state["question"]
         return state
@@ -144,6 +145,7 @@ Rules:
 
 
 def retrieve_node(state: ChatState, retriever: HybridRetriever) -> ChatState:
+    print("🔥 retrieve_node called")
     chunks = retriever.retrieve(
         query=state["question"],
         standard=state["standard_filter"],
@@ -177,6 +179,7 @@ def retrieve_node(state: ChatState, retriever: HybridRetriever) -> ChatState:
 
 
 def generate_node(state: ChatState) -> ChatState:
+    print("🔥 generate_node called", flush=True)
     chunks = state["retrieved_chunks"]
 
     relevant_chunks = [c for c in chunks if c.score >= RELEVANCE_THRESHOLD]
@@ -200,6 +203,10 @@ def generate_node(state: ChatState) -> ChatState:
         f"[Source {i+1}: {c.textbook_name}, Page {c.page_number}]\n{c.text}"
         for i, c in enumerate(relevant_chunks)
     )
+
+    print("\n========== CONTEXT SENT TO LLM ==========" , flush=True)
+    print(context_block, flush=True)
+    print("=========================================\n", flush=True)
 
     system_prompt = f"""You are a helpful study assistant that answers questions
 STRICTLY using the provided textbook excerpts below. Rules:

@@ -1,15 +1,38 @@
-FROM python:3.11-slim
+FROM python:3.11-slim as builder
 
 WORKDIR /app
 
-# System dependencies needed by PyMuPDF, OCR, and other packages
+# System dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+# Install with extended timeout and retries for large binary packages
+RUN pip install \
+    --no-cache-dir \
+    --default-timeout=600 \
+    --retries=10 \
+    --index-url https://pypi.org/simple/ \
+    --extra-index-url https://download.pytorch.org/whl/cpu \
+    -r requirements.txt
+
+# Final stage
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# System dependencies for runtime
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed dependencies from builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 COPY . .
 
