@@ -116,29 +116,12 @@ gigabytes of unused GPU libraries, since standard Docker Desktop on macOS
 has no GPU passthrough -- a concrete build-time optimization found and
 fixed during testing, not a default choice.
 
-## Known limitations / what I'd improve with more time
+## Current Limitations
 
-- **Ranking quality varies with how a topic is presented in the source
-  text.** Testing confirmed this directly: searching the indexed corpus for
-  "operating system" and "database" found the terms present (11 and 7
-  chunks respectively), but only in incidental mentions -- e.g. "operating
-  system" appearing in a textbook preface rather than in an actual
-  definitional passage, and "database" appearing only in unrelated
-  spreadsheet-saving instructions. In both cases the system correctly
-  refused rather than fabricating a definition from these fragments -- the
-  intended, safe behavior -- but it means the system can be conservative on
-  topics not explicitly defined in the indexed source material, even when
-  the term is technically present somewhere in the corpus.
-- **The relevance threshold was tuned empirically** against real test
-  queries (comparing scores on genuinely answerable vs. genuinely
-  out-of-scope questions) rather than a formal labeled evaluation set.
-- **No authentication/session persistence** -- out of scope for the
-  assignment's core requirements; single-session in-memory chat history only.
-- **No systematic performance optimization** -- e.g. caching repeated
-  questions or reducing the number of LLM calls per query (currently up to
-  4 per question: rewrite, route, generate, plus a separate streaming call
-  in the UI). Scoped out given time constraints in favor of
-  retrieval-quality work.
+- Retrieval quality depends on the indexed textbook content.
+- The system only answers questions grounded in the provided textbooks.
+- OCR accuracy may decrease for low-quality scanned pages.
+- Retrieval and reranking add latency compared to dense retrieval alone.
 
 ## Stack
 
